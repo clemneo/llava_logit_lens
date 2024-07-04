@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML File Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+            height: 80vh;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="tab-container" class="tab"></div>
+    <div id="content-container"></div>
+
+    <script>
+        const htmlFiles = ['llava-1.5-7b-hf_ILSVRC2012_val_00000001_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000002_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000003_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000004_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000005_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000006_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000007_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000008_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000009_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000010_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000011_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000012_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000013_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000014_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000015_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000016_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000017_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000018_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000019_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000020_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000021_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000022_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000023_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000024_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000025_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000026_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000027_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000028_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000029_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000030_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000031_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000032_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000033_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000034_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000035_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000036_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000037_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000038_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000039_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000040_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000041_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000042_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000043_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000044_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000045_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000046_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000047_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000048_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000049_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000050_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000051_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000052_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000053_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000054_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000055_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000056_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000057_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000058_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000059_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000060_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000061_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000062_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000063_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000064_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000065_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000066_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000067_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000068_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000069_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000070_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000071_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000072_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000073_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000074_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000075_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000076_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000077_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000078_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000079_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000080_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000081_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000082_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000083_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000084_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000085_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000086_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000087_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000088_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000089_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000090_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000091_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000092_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000093_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000094_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000095_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000096_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000097_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000098_logit_lens.html', 'llava-1.5-7b-hf_ILSVRC2012_val_00000099_logit_lens.html'];
+        const fileLabels = ['val_00000001', 'val_00000002', 'val_00000003', 'val_00000004', 'val_00000005', 'val_00000006', 'val_00000007', 'val_00000008', 'val_00000009', 'val_00000010', 'val_00000011', 'val_00000012', 'val_00000013', 'val_00000014', 'val_00000015', 'val_00000016', 'val_00000017', 'val_00000018', 'val_00000019', 'val_00000020', 'val_00000021', 'val_00000022', 'val_00000023', 'val_00000024', 'val_00000025', 'val_00000026', 'val_00000027', 'val_00000028', 'val_00000029', 'val_00000030', 'val_00000031', 'val_00000032', 'val_00000033', 'val_00000034', 'val_00000035', 'val_00000036', 'val_00000037', 'val_00000038', 'val_00000039', 'val_00000040', 'val_00000041', 'val_00000042', 'val_00000043', 'val_00000044', 'val_00000045', 'val_00000046', 'val_00000047', 'val_00000048', 'val_00000049', 'val_00000050', 'val_00000051', 'val_00000052', 'val_00000053', 'val_00000054', 'val_00000055', 'val_00000056', 'val_00000057', 'val_00000058', 'val_00000059', 'val_00000060', 'val_00000061', 'val_00000062', 'val_00000063', 'val_00000064', 'val_00000065', 'val_00000066', 'val_00000067', 'val_00000068', 'val_00000069', 'val_00000070', 'val_00000071', 'val_00000072', 'val_00000073', 'val_00000074', 'val_00000075', 'val_00000076', 'val_00000077', 'val_00000078', 'val_00000079', 'val_00000080', 'val_00000081', 'val_00000082', 'val_00000083', 'val_00000084', 'val_00000085', 'val_00000086', 'val_00000087', 'val_00000088', 'val_00000089', 'val_00000090', 'val_00000091', 'val_00000092', 'val_00000093', 'val_00000094', 'val_00000095', 'val_00000096', 'val_00000097', 'val_00000098', 'val_00000099'];
+
+        function createTabs() {{
+            const tabContainer = document.getElementById('tab-container');
+            const contentContainer = document.getElementById('content-container');
+
+            htmlFiles.forEach((file, index) => {{
+                const button = document.createElement('button');
+                button.className = 'tablinks';
+                button.textContent = fileLabels[index];
+                button.onclick = () => openTab(event, file);
+                tabContainer.appendChild(button);
+
+                const content = document.createElement('div');
+                content.id = file;
+                content.className = 'tabcontent';
+                const iframe = document.createElement('iframe');
+                iframe.src = file;
+                content.appendChild(iframe);
+                contentContainer.appendChild(content);
+
+                if (index === 0) {{
+                    button.click();
+                }}
+            }});
+        }}
+
+        function openTab(evt, fileName) {{
+            const tabcontent = document.getElementsByClassName('tabcontent');
+            for (let i = 0; i < tabcontent.length; i++) {{
+                tabcontent[i].style.display = 'none';
+            }}
+
+            const tablinks = document.getElementsByClassName('tablinks');
+            for (let i = 0; i < tablinks.length; i++) {{
+                tablinks[i].className = tablinks[i].className.replace(' active', '');
+            }}
+
+            document.getElementById(fileName).style.display = 'block';
+            evt.currentTarget.className += ' active';
+        }}
+
+        window.onload = createTabs;
+    </script>
+</body>
+</html>
+    
