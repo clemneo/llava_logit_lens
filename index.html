@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,26 +10,24 @@
             margin: 0;
             padding: 20px;
         }
-        #search {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        #pagination {
+        #navigation {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
         }
         #file-list {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            margin-bottom: 20px;
         }
-        .file-button {
+        .nav-button, .file-button {
             padding: 10px;
             background-color: #f0f0f0;
             border: none;
             cursor: pointer;
         }
-        .file-button.active {
+        .nav-button.active, .file-button.active {
             background-color: #ddd;
         }
         #file-viewer {
@@ -38,51 +35,82 @@
             height: 600px;
             border: 1px solid #ddd;
         }
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <input type="text" id="search" placeholder="Search files...">
-    <div id="pagination"></div>
+    <div id="navigation"></div>
     <div id="file-list"></div>
     <iframe id="file-viewer"></iframe>
 
     <script>
+        const figureFiles = [
+            {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000061_logit_lens.html", "label": "Figure 3(a) Sweater"},
+            {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000032_logit_lens.html", "label": "Figure 3(b) Go-Kart"},
+            {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000053_logit_lens.html", "label": "Figure 3(c) Switch"},
+            {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000023_logit_lens.html", "label": "Figure 3(d) Apples"}
+        ];
         const files = [{"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000001_logit_lens.html", "label": "val_00000001"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000002_logit_lens.html", "label": "val_00000002"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000003_logit_lens.html", "label": "val_00000003"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000004_logit_lens.html", "label": "val_00000004"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000005_logit_lens.html", "label": "val_00000005"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000006_logit_lens.html", "label": "val_00000006"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000007_logit_lens.html", "label": "val_00000007"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000008_logit_lens.html", "label": "val_00000008"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000009_logit_lens.html", "label": "val_00000009"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000010_logit_lens.html", "label": "val_00000010"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000011_logit_lens.html", "label": "val_00000011"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000012_logit_lens.html", "label": "val_00000012"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000013_logit_lens.html", "label": "val_00000013"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000014_logit_lens.html", "label": "val_00000014"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000015_logit_lens.html", "label": "val_00000015"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000016_logit_lens.html", "label": "val_00000016"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000017_logit_lens.html", "label": "val_00000017"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000018_logit_lens.html", "label": "val_00000018"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000019_logit_lens.html", "label": "val_00000019"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000020_logit_lens.html", "label": "val_00000020"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000021_logit_lens.html", "label": "val_00000021"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000022_logit_lens.html", "label": "val_00000022"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000023_logit_lens.html", "label": "val_00000023"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000024_logit_lens.html", "label": "val_00000024"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000025_logit_lens.html", "label": "val_00000025"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000026_logit_lens.html", "label": "val_00000026"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000027_logit_lens.html", "label": "val_00000027"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000028_logit_lens.html", "label": "val_00000028"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000029_logit_lens.html", "label": "val_00000029"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000030_logit_lens.html", "label": "val_00000030"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000031_logit_lens.html", "label": "val_00000031"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000032_logit_lens.html", "label": "val_00000032"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000033_logit_lens.html", "label": "val_00000033"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000034_logit_lens.html", "label": "val_00000034"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000035_logit_lens.html", "label": "val_00000035"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000036_logit_lens.html", "label": "val_00000036"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000037_logit_lens.html", "label": "val_00000037"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000038_logit_lens.html", "label": "val_00000038"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000039_logit_lens.html", "label": "val_00000039"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000040_logit_lens.html", "label": "val_00000040"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000041_logit_lens.html", "label": "val_00000041"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000042_logit_lens.html", "label": "val_00000042"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000043_logit_lens.html", "label": "val_00000043"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000044_logit_lens.html", "label": "val_00000044"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000045_logit_lens.html", "label": "val_00000045"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000046_logit_lens.html", "label": "val_00000046"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000047_logit_lens.html", "label": "val_00000047"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000048_logit_lens.html", "label": "val_00000048"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000049_logit_lens.html", "label": "val_00000049"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000050_logit_lens.html", "label": "val_00000050"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000051_logit_lens.html", "label": "val_00000051"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000052_logit_lens.html", "label": "val_00000052"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000053_logit_lens.html", "label": "val_00000053"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000054_logit_lens.html", "label": "val_00000054"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000055_logit_lens.html", "label": "val_00000055"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000056_logit_lens.html", "label": "val_00000056"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000057_logit_lens.html", "label": "val_00000057"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000058_logit_lens.html", "label": "val_00000058"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000059_logit_lens.html", "label": "val_00000059"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000060_logit_lens.html", "label": "val_00000060"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000061_logit_lens.html", "label": "val_00000061"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000062_logit_lens.html", "label": "val_00000062"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000063_logit_lens.html", "label": "val_00000063"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000064_logit_lens.html", "label": "val_00000064"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000065_logit_lens.html", "label": "val_00000065"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000066_logit_lens.html", "label": "val_00000066"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000067_logit_lens.html", "label": "val_00000067"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000068_logit_lens.html", "label": "val_00000068"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000069_logit_lens.html", "label": "val_00000069"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000070_logit_lens.html", "label": "val_00000070"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000071_logit_lens.html", "label": "val_00000071"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000072_logit_lens.html", "label": "val_00000072"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000073_logit_lens.html", "label": "val_00000073"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000074_logit_lens.html", "label": "val_00000074"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000075_logit_lens.html", "label": "val_00000075"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000076_logit_lens.html", "label": "val_00000076"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000077_logit_lens.html", "label": "val_00000077"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000078_logit_lens.html", "label": "val_00000078"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000079_logit_lens.html", "label": "val_00000079"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000080_logit_lens.html", "label": "val_00000080"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000081_logit_lens.html", "label": "val_00000081"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000082_logit_lens.html", "label": "val_00000082"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000083_logit_lens.html", "label": "val_00000083"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000084_logit_lens.html", "label": "val_00000084"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000085_logit_lens.html", "label": "val_00000085"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000086_logit_lens.html", "label": "val_00000086"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000087_logit_lens.html", "label": "val_00000087"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000088_logit_lens.html", "label": "val_00000088"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000089_logit_lens.html", "label": "val_00000089"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000090_logit_lens.html", "label": "val_00000090"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000091_logit_lens.html", "label": "val_00000091"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000092_logit_lens.html", "label": "val_00000092"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000093_logit_lens.html", "label": "val_00000093"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000094_logit_lens.html", "label": "val_00000094"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000095_logit_lens.html", "label": "val_00000095"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000096_logit_lens.html", "label": "val_00000096"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000097_logit_lens.html", "label": "val_00000097"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000098_logit_lens.html", "label": "val_00000098"}, {"file": "llava-1.5-7b-hf_ILSVRC2012_val_00000099_logit_lens.html", "label": "val_00000099"}];
         const itemsPerPage = 20;
+        let currentSection = 'figure';
         let currentPage = 1;
-        let filteredFiles = [...files];
+
+        function displayNavigation() {
+            const nav = document.getElementById('navigation');
+            nav.innerHTML = '';
+            
+            const figureButton = document.createElement('button');
+            figureButton.textContent = 'Figure';
+            figureButton.className = 'nav-button' + (currentSection === 'figure' ? ' active' : '');
+            figureButton.onclick = () => changeSection('figure');
+            nav.appendChild(figureButton);
+
+            const pageCount = Math.ceil(files.length / itemsPerPage);
+            for (let i = 1; i <= pageCount; i++) {
+                const button = document.createElement('button');
+                button.textContent = `Examples ${(i-1)*itemsPerPage + 1}-${i*itemsPerPage}`;
+                button.className = 'nav-button' + (currentSection === 'examples' && currentPage === i ? ' active' : '');
+                button.onclick = () => changeSection('examples', i);
+                nav.appendChild(button);
+            }
+        }
 
         function displayFiles() {
             const fileList = document.getElementById('file-list');
             fileList.innerHTML = '';
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageFiles = filteredFiles.slice(start, end);
+            
+            let filesToDisplay;
+            if (currentSection === 'figure') {
+                filesToDisplay = figureFiles;
+            } else {
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                filesToDisplay = files.slice(start, end);
+            }
 
-            pageFiles.forEach(file => {
+            filesToDisplay.forEach(file => {
                 const button = document.createElement('button');
                 button.textContent = file.label;
                 button.className = 'file-button';
                 button.onclick = () => loadFile(file.file);
                 fileList.appendChild(button);
             });
-
-            updatePagination();
         }
 
-        function updatePagination() {
-            const pageCount = Math.ceil(filteredFiles.length / itemsPerPage);
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-
-            for (let i = 1; i <= pageCount; i++) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.onclick = () => {
-                    currentPage = i;
-                    displayFiles();
-                };
-                pagination.appendChild(button);
+        function changeSection(section, page = 1) {
+            currentSection = section;
+            currentPage = page;
+            displayNavigation();
+            displayFiles();
+            if (section === 'figure') {
+                loadFile(figureFiles[0].file);
+            } else {
+                const start = (page - 1) * itemsPerPage;
+                loadFile(files[start].file);
             }
         }
 
@@ -99,21 +127,10 @@
             });
         }
 
-        function searchFiles() {
-            const searchTerm = document.getElementById('search').value.toLowerCase();
-            filteredFiles = files.filter(file => 
-                file.label.toLowerCase().includes(searchTerm) || 
-                file.file.toLowerCase().includes(searchTerm)
-            );
-            currentPage = 1;
-            displayFiles();
-        }
-
-        document.getElementById('search').addEventListener('input', searchFiles);
-
         // Initial display
+        displayNavigation();
         displayFiles();
+        loadFile(figureFiles[0].file); // Load the first figure file by default
     </script>
 </body>
 </html>
-    

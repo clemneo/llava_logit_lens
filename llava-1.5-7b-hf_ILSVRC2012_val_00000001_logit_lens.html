@@ -119,6 +119,7 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
     
     let isLocked = false;
     let highlightedRow = null;
+    let lockedPatchIndex = null;
     
     // Create corner header
     const cornerHeader = table.createTHead().insertRow();
@@ -165,7 +166,8 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
         updateTooltipPosition(e);
         
         if (tokenLabels[pos].startsWith('<IMG')) {
-            highlightImagePatch(parseInt(tokenLabels[pos].slice(4, 7)));
+            const patchIndex = parseInt(tokenLabels[pos].slice(4, 7));
+            highlightImagePatch(patchIndex);
             highlightTableRow(pos, shouldScroll);
         } else {
             highlightBox.style.display = 'none';
@@ -175,8 +177,8 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
 
     function hideTooltip() {
         tooltip.style.display = 'none';
-        highlightBox.style.display = 'none';
         if (!isLocked) {
+            highlightBox.style.display = 'none';
             unhighlightTableRow();
         }
     }
@@ -221,15 +223,24 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
     }
 
     function highlightTableRow(rowIndex, shouldScroll = false) {
-        if (highlightedRow) {
-            highlightedRow.classList.remove('highlighted-row');
-        }
-        highlightedRow = table.rows[rowIndex + 1];  // +1 to account for header row
-        highlightedRow.classList.add('highlighted-row');
-        if (shouldScroll) {
-            highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    // Remove highlight from the previously highlighted row, if any
+    if (highlightedRow) {
+        highlightedRow.classList.remove('highlighted-row');
     }
+
+    // Highlight the new row (accounting for the header row)
+    highlightedRow = table.rows[rowIndex + 1];
+    highlightedRow.classList.add('highlighted-row');
+
+    // If scrolling is requested, scroll the row into view aligned to the right
+    if (shouldScroll) {
+        highlightedRow.scrollIntoView({
+            behavior: 'smooth',    // Smooth scrolling
+            block: 'center',       // Vertically center the row
+            inline: 'end'          // Horizontally align the row to the right
+        });
+    }
+}
 
     function unhighlightTableRow() {
         if (highlightedRow) {
@@ -240,16 +251,11 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
 
     image.addEventListener('mousemove', (e) => {
         if (!isLocked) {
-            const rect = image.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const patchX = Math.floor(x / (image.width / gridSize));
-            const patchY = Math.floor(y / (image.height / gridSize));
-            const patchIndex = patchY * gridSize + patchX + 1;
+            const patchIndex = getPatchIndexFromMouseEvent(e);
             highlightImagePatch(patchIndex);
-            const tokenIndex = tokenLabels.findIndex(label => label === `<IMG${patchIndex.toString().padStart(3, '0')}>`);
+            const tokenIndex = getTokenIndexFromPatchIndex(patchIndex);
             if (tokenIndex !== -1) {
-                showTooltip(e, 0, tokenIndex, true);  // Show tooltip for the first layer and scroll
+                showTooltip(e, 0, tokenIndex, true);
             }
         }
     });
@@ -262,15 +268,37 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
 
     image.addEventListener('click', (e) => {
         isLocked = !isLocked;
-        if (!isLocked) {
+        if (isLocked) {
+            lockedPatchIndex = getPatchIndexFromMouseEvent(e);
+            highlightImagePatch(lockedPatchIndex);
+            const tokenIndex = getTokenIndexFromPatchIndex(lockedPatchIndex);
+            if (tokenIndex !== -1) {
+                highlightTableRow(tokenIndex, true);
+            }
+        } else {
+            lockedPatchIndex = null;
             hideTooltip();
         }
     });
 
     table.addEventListener('click', () => {
         isLocked = false;
+        lockedPatchIndex = null;
         hideTooltip();
     });
+
+    function getPatchIndexFromMouseEvent(e) {
+        const rect = image.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const patchX = Math.floor(x / (image.width / gridSize));
+        const patchY = Math.floor(y / (image.height / gridSize));
+        return patchY * gridSize + patchX + 1;
+    }
+
+    function getTokenIndexFromPatchIndex(patchIndex) {
+        return tokenLabels.findIndex(label => label === `<IMG${patchIndex.toString().padStart(3, '0')}>`);
+    }
 </script>
 </body>
 </html>

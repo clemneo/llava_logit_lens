@@ -221,15 +221,24 @@ What is the object in this image? Answer in one word. ASSISTANT:"</p>
     }
 
     function highlightTableRow(rowIndex, shouldScroll = false) {
-        if (highlightedRow) {
-            highlightedRow.classList.remove('highlighted-row');
-        }
-        highlightedRow = table.rows[rowIndex + 1];  // +1 to account for header row
-        highlightedRow.classList.add('highlighted-row');
-        if (shouldScroll) {
-            highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    // Remove highlight from the previously highlighted row, if any
+    if (highlightedRow) {
+        highlightedRow.classList.remove('highlighted-row');
     }
+
+    // Highlight the new row (accounting for the header row)
+    highlightedRow = table.rows[rowIndex + 1];
+    highlightedRow.classList.add('highlighted-row');
+
+    // If scrolling is requested, scroll the row into view aligned to the right
+    if (shouldScroll) {
+        highlightedRow.scrollIntoView({
+            behavior: 'smooth',    // Smooth scrolling
+            block: 'center',       // Vertically center the row
+            inline: 'end'          // Horizontally align the row to the right
+        });
+    }
+}
 
     function unhighlightTableRow() {
         if (highlightedRow) {
